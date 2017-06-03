@@ -23,7 +23,7 @@
  				h = 800 - m[ 0 ] - m[ 2 ],
  				i = 0,
  				root;
- 			var radius = 18;
+ 			var radius = scope.radius || 18;
 
  			var tree = d3.layout.tree()
  				.size( [ h, w ] );
@@ -34,8 +34,8 @@
  				} );
 
  			var vis = d3.select( "collapsible-tree" ).append( "svg:svg" )
- 				.attr( "width", w + m[ 1 ] + m[ 3 ] )
- 				.attr( "height", h + m[ 0 ] + m[ 2 ] )
+ 				.attr( "width", scope.width )
+ 				.attr( "height", scope.height )
  				.append( "svg:g" )
  				.attr( "transform", "translate(" + m[ 3 ] + "," + m[ 0 ] + ")" );
 
