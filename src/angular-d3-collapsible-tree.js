@@ -19,12 +19,11 @@
  			images: '=',
  		},
  		link: function( scope, element ) {
- 			var m = [ 20, 120, 20, 120 ],
+ 			var m = [ scope.width * 0.025, 120, scope.width * 0.025, 120 ],
  				w = 1280 - m[ 1 ] - m[ 3 ],
  				h = 800 - m[ 0 ] - m[ 2 ],
  				i = 0,
  				root;
- 			var radius = scope.radius || 18;
  			var tree = d3.layout.tree()
  				.size( [ h, w ] );
 
@@ -33,9 +32,9 @@
  					return [ d.y, d.x ];
  				} );
 
- 			var svg = d3.select( "collapsible-tree" ).append( "svg:svg" )
- 				.attr( "width", scope.width )
- 				.attr( "height", scope.height );
+ 			var svg = d3.select( "collapsible-tree" ).append( "svg:svg" );
+ 			// 	.attr( "width", scope.width )
+ 			// 	.attr( "height", scope.height );
  			var defs = svg;
  			if ( scope.images ) {
  				defs = svg.append( 'svg:defs' );
@@ -85,6 +84,39 @@
  			}, true );
 
  			function update( source ) {
+ 				function wrap( text, width ) {
+ 					console.log( text, 'text' );
+ 					text.each( function() {
+ 						var text = d3.select( this ),
+ 							words = text.text().split( /\s+/ ).reverse(),
+ 							word,
+ 							line = [],
+ 							lineNumber = 0,
+ 							lineHeight = 20, // ems
+ 							y = text.attr( "y" ),
+ 							dy = parseFloat( text.attr( "dy" ) );
+ 						if ( words.length > 1 ) {
+ 							var tspan = text.text( null ).append( "tspan" ).attr( "x", 0 ).attr( "y", y ).attr( "dy", dy + "px" );
+ 							while ( word = words.pop() ) {
+ 								line.push( word );
+ 								tspan.text( line.join( " " ) );
+ 								if ( tspan.node().getComputedTextLength() > width ) {
+ 									line.pop();
+ 									tspan.text( line.join( " " ) );
+ 									line = [ word ];
+ 									if ( lineNumber === 0 ) {
+ 										tspan = text.append( "tspan" ).attr( "x", 0 ).attr( "y", y ).attr( "dy", lineHeight + "px" ).text( word );
+ 									} else {
+ 										tspan = text.append( "tspan" ).attr( "x", 0 ).attr( "y", y ).attr( "dy", lineHeight + "px" ).text( word );
+ 									}
+
+ 								}
+ 							}
+ 						}
+
+ 					} );
+ 				}
+ 				var radius = scope.width / scope.radius || 18;
  				var duration = d3.event && d3.event.altKey ? 5000 : 500;
  				var levelWidth = [ 1 ];
  				var childCount = function( level, n ) {
@@ -99,28 +131,28 @@
  					}
  				};
  				childCount( 0, root );
- 				var newHeight = d3.max( levelWidth ) * 150; // 20 pixels per line
+ 				var newHeight = d3.max( levelWidth ) * scope.width * 0.2; // 20 pixels per line
  				var maxDepth = 0;
  				var depthCount = function( node ) {
- 					if ( !node.children ) {
+ 					if ( !node.children || node.children.length === 0 ) {
  						return 1;
  					}
  					return 1 + d3.max( node.children.map( depthCount ) );
  				};
  				maxDepth = depthCount( root );
- 				var newWidth = maxDepth * 200;
+ 				var newWidth = maxDepth * scope.width * 0.25;
  				// update the tree height
  				tree = tree.size( [ newHeight, newWidth ] );
 
  				// >>> UPDATE THE SVG AS WELL <<<
- 				svg.attr( "height", newHeight + 20 );
- 				svg.attr( "width", newWidth + 20 );
+ 				svg.attr( "height", newHeight + scope.width * 0.1 );
+ 				svg.attr( "width", newWidth + scope.width * 0.1 );
  				// Compute the new tree layout.
  				var nodes = tree.nodes( root ).reverse();
 
  				// Normalize for fixed-depth.
  				nodes.forEach( function( d ) {
- 					d.y = d.depth * 180;
+ 					d.y = d.depth * scope.width * 0.225;
  				} );
 
  				// Update the nodes
@@ -160,7 +192,7 @@
  					} );
 
  				nodeEnter.append( "svg:text" )
- 					.attr( "dy", "" + ( radius * 2 + 10 ) )
+ 					.attr( "dy", "" + ( radius * 2 + scope.width * 0.0125 ) )
  					.attr( "text-anchor", function( d ) {
  						return "middle";
  					} )
@@ -188,7 +220,8 @@
  					} );
 
  				nodeUpdate.select( "text" )
- 					.style( "fill-opacity", 1 );
+ 					.style( "fill-opacity", 1 )
+ 					.call( wrap, radius * 2 + scope.width * 0.0125 );
 
  				// Transition exiting nodes to the parent's new position.
  				var nodeExit = node.exit().transition()

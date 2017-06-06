@@ -1,1 +1,1 @@
-.node circle{cursor:pointer;fill:#fff;stroke:#4682b4;stroke-width:1.5px}.node text{font-size:15px}path.link{fill:none;stroke:slategrey;stroke-width:1.5px}svg{display:block;margin:auto}
+.node circle{cursor:pointer;fill:#fff;stroke:#4682b4;stroke-width:1.5px}.node text{font-size:15px}@media screen and (max-width:600px){.node text{font-size:10px}}path.link{fill:none;stroke:slategrey;stroke-width:1.5px}svg{display:block;margin:auto}
