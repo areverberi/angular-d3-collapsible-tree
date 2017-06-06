@@ -19,7 +19,7 @@
  			images: '=',
  		},
  		link: function( scope, element ) {
- 			var m = [ scope.width * 0.025, 120, scope.width * 0.025, 120 ],
+ 			var m = [ scope.width * 0.025, scope.width * 0.15, scope.width * 0.025, scope.width * 0.15 ],
  				w = 1280 - m[ 1 ] - m[ 3 ],
  				h = 800 - m[ 0 ] - m[ 2 ],
  				i = 0,
@@ -86,9 +86,11 @@
  			function update( source ) {
  				function wrap( text, width ) {
  					console.log( text, 'text' );
+
  					text.each( function() {
  						var text = d3.select( this ),
- 							words = text.text().split( /\s+/ ).reverse(),
+ 							name = text.data()[ 0 ].name || '',
+ 							words = name.split( /\s+/ ).reverse(),
  							word,
  							line = [],
  							lineNumber = 0,
