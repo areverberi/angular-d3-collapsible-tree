@@ -173,8 +173,9 @@
 
  						toggle( d );
  						if ( scope.onNodeClick ) {
+ 							var id = d.realId ? d.realId : d.id;
  							scope.onNodeClick( {
- 								'id': d.id
+ 								'id': id
  							} );
  						}
  						update( d );
